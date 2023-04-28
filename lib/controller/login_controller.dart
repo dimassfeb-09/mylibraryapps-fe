@@ -1,14 +1,20 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mylibraryapps/ui/CompletedUserData/completed_user_data.dart';
+import 'package:http/http.dart' as http;
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../bloc/login/login_bloc.dart';
+
 import '../ui/Home/home.dart';
+import '../utils/url.dart';
+import '/ui/CompletedUserData/completed_user_data.dart';
+
 import '/common/widgets/toast.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
@@ -39,6 +45,7 @@ Future<void> loginController(BuildContext context, String type) async {
 }
 
 Future<void> signInWithEmail(BuildContext context, String email, String password) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
   try {
     if (email.isEmpty) {
       toastInfo(msg: "Email is required.");
@@ -56,11 +63,19 @@ Future<void> signInWithEmail(BuildContext context, String email, String password
         return toastInfo(msg: "Akun belum terverifikasi, cek email untuk verifikasi.");
       }
 
+      final response = await http.get(Uri.parse("$url/user/get?uuid=${auth.currentUser!.uid}"));
+      final data = json.decode(response.body)["data"];
+      prefs.setString("uuid", auth.currentUser!.uid);
+      prefs.setInt("user_id", data["id"]);
+
       toastInfo(msg: "Berhasil login.");
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const Home()), (route) => route is Home);
       return;
+    } else {
+      return;
     }
   } on FirebaseAuthException catch (e) {
+    print(e.message);
     switch (e.code) {
       case "invalid-email":
         toastInfo(msg: "Format email tidak diizinkan.");
@@ -72,13 +87,14 @@ Future<void> signInWithEmail(BuildContext context, String email, String password
         toastInfo(msg: "Terlalu banyak permintaan, silahkan tunggu beberapa saat lagi.");
         return;
       default:
-        toastInfo(msg: "Mohon maaf, terjadi kesalahan.");
+        toastInfo(msg: e.message!);
         return;
     }
   }
 }
 
 Future<void> signInWithGoogle(BuildContext context) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
   try {
     GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.signIn();
@@ -96,6 +112,7 @@ Future<void> signInWithGoogle(BuildContext context) async {
 
       if (userCredential.user != null) {
         String uid = userCredential.user!.uid;
+
         // Check Firetstore if user data is Completed
         bool isUIDUserExists = await checkUIDUserAlreadyExists(uid);
         if (!isUIDUserExists) {

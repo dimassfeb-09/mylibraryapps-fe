@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../data/models/book.dart';
 
-SizedBox imageFound(AsyncSnapshot<String?> snapshot) {
+SizedBox imageFound(AsyncSnapshot<String?> snapshot, {double height = 135, double width = 88}) {
   return SizedBox(
-    height: 135,
-    width: 88,
+    height: height,
+    width: width,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Image.network(snapshot.data!, fit: BoxFit.cover),
@@ -13,13 +13,13 @@ SizedBox imageFound(AsyncSnapshot<String?> snapshot) {
   );
 }
 
-Container imageNotFound() {
+Container imageNotFound({double height = 135, double width = 88}) {
   return Container(
     alignment: Alignment.center,
-    height: 135,
-    width: 88,
+    height: height,
+    width: width,
     decoration: BoxDecoration(
-      color: Colors.grey[200],
+      color: Colors.grey[300],
       borderRadius: BorderRadius.circular(20),
     ),
     child: const Text(

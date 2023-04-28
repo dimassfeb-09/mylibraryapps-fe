@@ -7,6 +7,7 @@ import 'package:mylibraryapps/common/widgets/toast.dart';
 import 'package:mylibraryapps/controller/book_controller.dart';
 import 'package:mylibraryapps/data/models/book.dart';
 import 'package:mylibraryapps/ui/BookingBook/booking_book_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '/bloc/book/book_bloc.dart';
 import '/common/widgets/appbar.dart';
@@ -34,12 +35,20 @@ class DetailBookView extends StatelessWidget {
         action: [
           BlocBuilder<WishlistBloc, WishlistState>(
             builder: (context, state) {
-              return IconButton(
-                icon: const Icon(Icons.favorite),
-                color: state.isWishlist ? Colors.red : Colors.grey,
-                enableFeedback: true,
-                onPressed: () {
-                  context.read<WishlistBloc>().add(GetWishlistEvent(bookId: bookState.book!.id!, userId: 4));
+              return GestureDetector(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  child: Icon(
+                    Icons.favorite,
+                    color: state.isWishlist ? Colors.red : Colors.grey,
+                  ),
+                ),
+                onTap: () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                  context
+                      .read<WishlistBloc>()
+                      .add(GetWishlistEvent(bookId: bookState.book!.id!, userId: prefs.getInt("user_id")!));
                   if (state.isWishlist) {
                     if (state.wishlist != null) {
                       context.read<WishlistBloc>().add(DeleteWishlistEvent(id: state.wishlist!.id!));
@@ -48,7 +57,9 @@ class DetailBookView extends StatelessWidget {
                     return;
                   } else {
                     if (bookState.book != null) {
-                      context.read<WishlistBloc>().add(AddWishlistEvent(bookId: bookState.book!.id!, userId: 4));
+                      context
+                          .read<WishlistBloc>()
+                          .add(AddWishlistEvent(bookId: bookState.book!.id!, userId: prefs.getInt("user_id")!));
                     }
                     return;
                   }

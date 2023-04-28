@@ -18,6 +18,7 @@ Widget customSearchTextField({
       border: Border.all(color: const Color(0xFFAFBACA)),
     ),
     child: TextField(
+      controller: controller,
       autocorrect: false,
       onSubmitted: onSubmit,
       onChanged: onChanged,

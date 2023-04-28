@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mylibraryapps/bloc/genre/genre_bloc.dart';
+import 'package:mylibraryapps/bloc/home/home_bloc.dart';
 import 'package:mylibraryapps/controller/book_controller.dart';
 import 'package:mylibraryapps/controller/genre_controller.dart';
+import 'package:mylibraryapps/ui/BookDetail/book_detail.dart';
 
 import '../../../bloc/category/category_bloc.dart';
 import '../../../bloc/book/book_bloc.dart';
+import '../../../bloc/wishlist/wishlist_bloc.dart';
 import '../../Book/book.dart';
+import '../../Book/widgets/book_widgets.dart';
 import '../../Category/category_view.dart';
 
 Widget customHomeBanner() {
@@ -38,35 +42,74 @@ Widget customDropDownListBook(BuildContext context) {
           ? ListView.builder(
               itemCount: state.books!.length,
               itemBuilder: (context, index) {
-                return Container(
-                  height: 120,
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 100,
-                        width: 80,
-                        color: Colors.red,
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (context) => BookBloc()
+                              ..emit(GetBookSuccess(
+                                book: state.books![index],
+                              )),
+                          ),
+                          BlocProvider(
+                            create: (context) => WishlistBloc()
+                              ..add(GetWishlistEvent(
+                                bookId: state.books![index].id!,
+                                userId: 4,
+                              )),
+                          ),
+                        ],
+                        child: const DetailBookView(),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              state.books![index].title!,
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              state.books![index].description!,
-                              maxLines: 4,
-                              textAlign: TextAlign.justify,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
+                    ),
+                  ),
+                  child: Container(
+                    height: 150,
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        FutureBuilder<String?>(
+                          future: getImageFirebaseStorage(state.books![index].imgUrl!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const SizedBox(
+                                height: 135,
+                                width: 88,
+                                child: Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                ),
+                              );
+                            }
+                            if (snapshot.data != null) {
+                              return imageFound(snapshot, height: 150, width: 90);
+                            } else {
+                              return imageNotFound(height: 150, width: 90);
+                            }
+                          },
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                state.books![index].title!,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                state.books![index].description!,
+                                maxLines: 4,
+                                textAlign: TextAlign.justify,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

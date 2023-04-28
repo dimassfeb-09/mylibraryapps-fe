@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mylibraryapps/bloc/book/book_bloc.dart';
+import 'package:mylibraryapps/bloc/home/home_bloc.dart';
 import 'package:mylibraryapps/common/widgets/search_textfield.dart';
 import 'package:mylibraryapps/ui/Home/widgets/home_widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/widgets/appbar.dart';
 import '../../controller/home_controller.dart';
@@ -19,7 +21,11 @@ class Home extends StatelessWidget {
         title: "Home",
         action: [
           GestureDetector(
-            onTap: () => singOutController(context),
+            onTap: () async {
+              singOutController(context);
+              final SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.clear();
+            },
             child: Container(
               margin: const EdgeInsets.only(right: 15),
               child: const Icon(Icons.logout, size: 30),

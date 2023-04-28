@@ -1,10 +1,16 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mylibraryapps/utils/url.dart';
 import '../../bloc/register/register_bloc.dart';
+
 import '/common/widgets/toast.dart';
 
 Future<void> registerController(BuildContext context) async {
@@ -39,9 +45,30 @@ Future<void> registerController(BuildContext context) async {
         "npm": npm,
         "email": email,
       })
-        ..then((value) {
-          Navigator.of(context).pop();
-          return toastInfo(msg: "Berhasil daftar, silahkan login.");
+        ..then((value) async {
+          Uri path = Uri.parse("$url/user/add");
+          try {
+            final response = await http.post(
+              path,
+              body: json.encode({
+                "email": email,
+                "password": password,
+                "npm": npm,
+                "name": name,
+                "uuid": credential.user!.uid,
+                "is_google": true
+              }),
+              headers: {"Content-Type": "application/json"},
+            );
+            if (response.statusCode == 200) {
+              Navigator.of(context).pop();
+              return toastInfo(msg: "Berhasil daftar, silahkan login.");
+            } else {
+              throw response.body;
+            }
+          } catch (e) {
+            print(e);
+          }
         })
         ..catchError((e) {
           toastInfo(msg: "Failed to register $e");

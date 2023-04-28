@@ -1,4 +1,8 @@
 part of 'home_bloc.dart';
 
-@immutable
 abstract class HomeEvent {}
+
+class HomeGetUserInfoEvent extends HomeEvent {
+  final String uuid;
+  HomeGetUserInfoEvent({this.uuid = ""});
+}
