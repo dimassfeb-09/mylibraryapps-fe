@@ -5,10 +5,13 @@ import 'package:mylibraryapps/bloc/home/home_bloc.dart';
 import 'package:mylibraryapps/controller/book_controller.dart';
 import 'package:mylibraryapps/controller/genre_controller.dart';
 import 'package:mylibraryapps/ui/BookDetail/book_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../bloc/Pagination/pagination_bloc.dart';
 import '../../../bloc/category/category_bloc.dart';
 import '../../../bloc/book/book_bloc.dart';
 import '../../../bloc/wishlist/wishlist_bloc.dart';
+import '../../../controller/home_controller.dart';
 import '../../Book/book.dart';
 import '../../Book/widgets/book_widgets.dart';
 import '../../Category/category_view.dart';
@@ -177,5 +180,37 @@ Widget menuCategory(BuildContext context) {
         );
       },
     ),
+  );
+}
+
+GestureDetector logoutButton(BuildContext context) {
+  return GestureDetector(
+    onTap: () async {
+      singOutController(context);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+    },
+    child: Container(
+      margin: const EdgeInsets.only(right: 15),
+      child: const Icon(Icons.logout, size: 30),
+    ),
+  );
+}
+
+BottomNavigationBar customBottomNavigationBar(PaginationState state, BuildContext context) {
+  return BottomNavigationBar(
+    currentIndex: state.index,
+    onTap: (value) {
+      context.read<PaginationBloc>().add(ChangePagination(index: value));
+    },
+    items: const [
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+      BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Wishlist"),
+      BottomNavigationBarItem(icon: Icon(Icons.add_shopping_cart), label: "Booking Book"),
+      BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: "History"),
+    ],
+    backgroundColor: Colors.white,
+    selectedItemColor: const Color(0xFF003790),
+    unselectedItemColor: Colors.grey[400],
   );
 }
