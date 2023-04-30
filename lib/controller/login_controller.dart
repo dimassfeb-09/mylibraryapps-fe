@@ -69,7 +69,7 @@ Future<void> signInWithEmail(BuildContext context, String email, String password
       prefs.setInt("user_id", data["id"]);
 
       toastInfo(msg: "Berhasil login.");
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const Home()), (route) => route is Home);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Home()), (route) => route is Home);
       return;
     } else {
       return;
@@ -124,7 +124,7 @@ Future<void> signInWithGoogle(BuildContext context) async {
           return toastInfo(msg: "Harap verifikasi data anda.");
         }
 
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const Home()), (route) => false);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Home()), (route) => false);
         return toastInfo(msg: "Berhasil Login.");
       }
     } else {
