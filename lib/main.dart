@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mylibraryapps/bloc/NewBook/new_book_bloc.dart';
+import 'package:mylibraryapps/bloc/Pagination/pagination_bloc.dart';
 import 'package:mylibraryapps/bloc/book/book_bloc.dart';
 
 import '/firebase_options.dart';
@@ -48,9 +50,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => GenreBloc()),
         BlocProvider(create: (context) => CategoryBloc()),
         BlocProvider(create: (context) => WishlistBloc()),
+        BlocProvider(create: (context) => NewBookBloc()..add(GetNewBooksEvent())),
+        BlocProvider(create: (context) => PaginationBloc()),
       ],
       child: MaterialApp(
-        home: auth.currentUser != null ? const Home() : const Login(),
+        home: auth.currentUser != null ? Home() : const Login(),
       ),
     );
   }
