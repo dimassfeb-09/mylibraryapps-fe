@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 import 'package:mylibraryapps/controller/book_controller.dart';
 
 import '../../controller/home_controller.dart';
 import '../../data/models/book.dart';
-import '../../data/models/wishlist.dart';
 
 part 'book_event.dart';
 part 'book_state.dart';
@@ -29,6 +26,19 @@ class BookBloc extends Bloc<BookEvent, BookState> {
       await Future.delayed(const Duration(microseconds: 500));
       if (books != null) {
         emit(GetBooksSuccess(books: books));
+      } else {
+        emit(GetBooksEmpty());
+      }
+    });
+
+    on<GetBooksByBookIDEvent>((event, emit) async {
+      print("masuk");
+      emit(GetBooksLoading());
+      await Future.delayed(const Duration(microseconds: 500));
+
+      Book? book = await getBooksByBookID(bookId: event.bookId);
+      if (book != null) {
+        emit(GetBookBookIDSuccess(book: book));
       } else {
         emit(GetBooksEmpty());
       }

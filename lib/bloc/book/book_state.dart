@@ -38,3 +38,8 @@ class GetBookSuccess extends BookState {
   final Book? book;
   GetBookSuccess({this.id = 0, this.book}) : super(ID: id, book: book);
 }
+
+class GetBookBookIDSuccess extends BookState {
+  final Book? book;
+  GetBookBookIDSuccess({this.book}) : super(book: book);
+}

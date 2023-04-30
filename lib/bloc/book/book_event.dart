@@ -14,6 +14,7 @@ class GetBooksByIDEvent extends BookEvent {
   GetBooksByIDEvent({this.categoryId = 0, this.genreId = 0});
 }
 
-class GetBooksIsEmpty extends BookEvent {}
-
-class GetBooksIsError extends BookEvent {}
+class GetBooksByBookIDEvent extends BookEvent {
+  final int? bookId;
+  GetBooksByBookIDEvent({this.bookId = 0});
+}
