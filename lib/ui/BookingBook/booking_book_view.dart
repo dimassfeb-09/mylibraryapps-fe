@@ -8,11 +8,8 @@ class BookingBookView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: customAppBar(title: "Booking Book"),
-      body: const Center(
-        child: Text("Booking Book"),
-      ),
+    return const Center(
+      child: Text("Booking Book"),
     );
   }
 }
