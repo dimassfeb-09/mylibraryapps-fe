@@ -42,7 +42,7 @@ Future<void> completedUserDataController(BuildContext context, String uid, Strin
       ..then((value) async {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => const Home(),
+            builder: (context) => Home(),
           ),
           (route) => false,
         );
