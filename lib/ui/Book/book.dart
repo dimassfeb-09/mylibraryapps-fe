@@ -4,7 +4,6 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mylibraryapps/bloc/wishlist/wishlist_bloc.dart';
 import 'package:mylibraryapps/common/widgets/appbar.dart';
-import 'package:mylibraryapps/data/models/book.dart';
 import 'package:mylibraryapps/ui/BookDetail/book_detail.dart';
 
 import '../../bloc/book/book_bloc.dart';
