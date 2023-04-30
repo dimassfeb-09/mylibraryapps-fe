@@ -42,6 +42,25 @@ Future<List<Book>?> getBooksByID({int? categoryId, int? genreId}) async {
   }
 }
 
+Future<Book?> getBooksByBookID({int? bookId}) async {
+  try {
+    Uri path = Uri.parse("$url/book/get?id=$bookId");
+    final response = await http.get(path);
+    Map<String, dynamic>? data = json.decode(response.body)["data"];
+
+    Book? book;
+    if (data != null) {
+      book = Book.fromJson(data);
+      return book;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    print(e);
+    return null;
+  }
+}
+
 Future<String?> getImageFirebaseStorage(String? name) async {
   final storageRef = FirebaseStorage.instance.ref().child("images").child(name!);
   if (name == "") {
@@ -56,54 +75,23 @@ Future<String?> getImageFirebaseStorage(String? name) async {
   }
 }
 
-Future<bool> addWishlist({required int userId, required int bookId}) async {
+Future<List<Book>?> getNewBooks() async {
   try {
-    Uri path = Uri.parse("$url/wishlist/add");
-    final response = await http.post(
-      path,
-      body: json.encode({"book_id": bookId, "user_id": userId}),
-      headers: {"Content-Type": "application/json"},
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (e) {
-    print(e);
-    return false;
-  }
-}
-
-Future<Wishlist?> getWishlist({required int bookId, required int userId}) async {
-  try {
-    Uri path = Uri.parse("$url/wishlist/get?book_id=$bookId&user_id=$userId");
+    Uri path = Uri.parse("$url/book/get/new");
     final response = await http.get(path);
-    final data = json.decode(response.body)["data"];
+    List? data = json.decode(response.body)["data"];
 
-    if (response.statusCode == 200) {
-      Wishlist wishlist = Wishlist.fromJson(data);
-      return wishlist;
+    List<Book>? books = [];
+    if (data != null) {
+      print("masuk");
+      data.forEach((element) {
+        books.add(Book.fromJson(element));
+      });
+      return books;
     } else {
       return null;
     }
   } catch (e) {
     return null;
-  }
-}
-
-Future<bool> deleteWishlist({required int id}) async {
-  try {
-    Uri path = Uri.parse("$url/wishlist/delete?id=$id");
-    final response = await http.delete(path);
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (e) {
-    return false;
   }
 }
